@@ -1,0 +1,63 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "cn.yuanyuan.bean.Dog",
+      "name": "dog",
+      "type": "cn.yuanyuan.bean.Dog"
+    },
+    {
+      "sourceType": "cn.yuanyuan.bean.Person",
+      "name": "person",
+      "type": "cn.yuanyuan.bean.Person"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "cn.yuanyuan.bean.Dog",
+      "defaultValue": 0,
+      "name": "dog.age",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "cn.yuanyuan.bean.Dog",
+      "name": "dog.name",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "cn.yuanyuan.bean.Person",
+      "name": "person.age",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "cn.yuanyuan.bean.Person",
+      "name": "person.birth",
+      "type": "java.util.Date"
+    },
+    {
+      "sourceType": "cn.yuanyuan.bean.Person",
+      "name": "person.boss",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "cn.yuanyuan.bean.Person",
+      "name": "person.dog",
+      "type": "cn.yuanyuan.bean.Dog"
+    },
+    {
+      "sourceType": "cn.yuanyuan.bean.Person",
+      "name": "person.last-name",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "cn.yuanyuan.bean.Person",
+      "name": "person.lists",
+      "type": "java.util.List<java.lang.Object>"
+    },
+    {
+      "sourceType": "cn.yuanyuan.bean.Person",
+      "name": "person.maps",
+      "type": "java.util.Map<java.lang.String,java.lang.Object>"
+    }
+  ]
+}

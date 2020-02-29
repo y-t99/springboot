@@ -200,8 +200,84 @@ public class DefaultErrorAttributes
 
 2、通过异常捕获放回json数据，达到返回定制成员(无法自适应效果)。
 
-3、异常捕获，转发到`/error`无法将定制成员携带出去。
+3、异常捕获，转发到`/error`，无法将定制成员携带出去。
 
 4、自定义一个`ErrorControl`可以自定义异常处理。(初学不推荐)
 
 5、自定义一个`DefaultErrorAttributes`，`getErrorAttributes`方法中添加定制成员。
+
+## 二、数据校验实战
+
+### 1、场景
+
+前后端用json交互，后端需要校验请求的参数合法性，并在发生错误时反馈信息给前端。
+
+### 2、所需组件
+
+```java
+//反馈信息组件
+@Data
+public class ResultDTO {
+    private String message;
+    private Integer code;
+	public static ResultDTO errOf(String message,Integer code){
+        return new ResultDTO(code, message);
+    }
+}
+//数据校验错误时，异常处理：状态码400，反馈信息
+@ControllerAdvice
+public class CustomExceptionHandler {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public String bindException(HttpServletRequest request){
+        request.setAttribute("javax.servlet.error.status_code",400);
+        request.setAttribute("result",ResultDTO.errOf(2001,"请求参数异常"));
+        //以获得自适应返回前端页面还是json数据
+        return "forward:/error";
+    }
+}
+@Data
+@Component
+//注意错误信息配置文件，需命名为ValidationMessages.properties，在resource 目录下
+@ConfigurationProperties(prefix = "thing")
+public class Thing implements Serializable {
+    private static final long serialVersionUID = 139176836997366300L;
+    //被评论内容
+    @NotNull(message = "{thing.id}")
+    private Long thing;
+    @NotNull(message = "{thing.size}")
+    @Min(value = 1,message = "{thing.minMsg}")
+    @Max(value = 2,message = "{thing.maxMsg}")
+    private Integer size;
+}
+```
+
+```java
+@Component
+public class MyErrorAttributes extends DefaultErrorAttributes {
+    @Override
+    public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+        final Map<String, Object> attributes = super.getErrorAttributes(webRequest, includeStackTrace);
+        attributes.put("motto","今天，也是充满希望的一天");
+        //将返馈信息添加到模型或者json数据中
+        attributes.put("result",webRequest.getAttribute("result", RequestAttributes.SCOPE_REQUEST));
+        return attributes;
+    }
+}
+```
+
+### 3、控制器
+
+```java
+@Controller
+public class TestController {
+    @PostMapping("/test")
+    @ResponseBody
+    public String comment(@RequestBody@Valid Thing thing){
+        ...
+    }
+}
+```
+
+### 4、使用效果
+
+当前端传来的json参数中，封装到`thing`不能满足数据校验的要求时，会抛出`MethodArgumentNotValidException`。而后异常处理器，先将响应码改为`400`,再将反馈信息封装`ResultDTO`。最后转到SpringBoot的默认处理控制器`/error`中进行处理。
